@@ -1,5 +1,5 @@
 class MoviesController < ApplicationController
-  helper_method :sort_column, :sort_direction
+  
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -7,12 +7,27 @@ class MoviesController < ApplicationController
   end
 
   def index
-   if params[:sort_order].nil?
-      @movies = Movie.all
-    elsif 'by_title' == params[:sort_order]
-      @movies = Movie.find(:all, :order => :title)
-    elsif 'by_release_date' == params[:sort_order]
-      @movies = Movie.find(:all, :order => :release_date)
+   query_base = Movie
+
+    if !params[:ratings].nil?
+      query_base = query_base.scoped(:conditions => { :rating => params[:ratings].keys })
+    end
+
+    if !params[:sort_order].nil?
+      if 'by_title' == params[:sort_order]
+        query_base = query_base.scoped(:order => :title)
+      elsif 'by_release_date' == params[:sort_order]
+        query_base = query_base.scoped(:order => :release_date)
+      end
+    end
+
+    @movies = query_base.all
+    @all_ratings = Movie.all_ratings
+
+    if !params[:ratings].nil?
+      @selected_ratings = params[:ratings]
+    else
+      @selected_ratings = {}
     end
   end
 
