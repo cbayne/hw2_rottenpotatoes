@@ -10,11 +10,19 @@ class MoviesController < ApplicationController
    session[:ratings] = params[:ratings] if params[:ratings]
    session[:sort_order] = params[:sort_order] if params[:sort_order]
 
-    
-    if (!params[:ratings] && session[:ratings]) || (!params[:sort_order] && session[:sort_order])
+    if params[:sort] != session[:sort]
+      session[:sort] = sort
       flash.keep
-      redirect_to movies_path(ratings: session[:ratings], sort_order: session[:sort_order])
+      redirect_to :sort => sort, :ratings => @selected_ratings and return
     end
+
+    if params[:ratings] != session[:ratings] and @selected_ratings != {}
+      session[:sort] = sort
+      session[:ratings] = @selected_ratings
+      flash.keep
+      redirect_to :sort => sort, :ratings => @selected_ratings and return    
+ 
+end
    query_base = Movie
 
     session[:ratings] = params[:ratings] if params[:ratings]
