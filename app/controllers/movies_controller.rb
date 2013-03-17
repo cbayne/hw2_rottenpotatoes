@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
 
     
     if (!params[:ratings] && session[:ratings]) || (!params[:sort_order] && session[:sort_order])
+      flash.keep
       redirect_to movies_path(ratings: session[:ratings], sort_order: session[:sort_order])
     end
    query_base = Movie
